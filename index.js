@@ -32,7 +32,15 @@ const viewDepartments = () => {
 }
 
 const viewRoles = () => {
-    let query = 'SELECT * FROM roles'
+    let query = `
+    SELECT roles.id AS role_id,
+           roles.title AS job_title,
+           roles.salary AS role_salary,
+           departments.name AS department_name
+    FROM roles
+    JOIN departments ON roles.department_id = departments.id;
+`;
+
     db.query(query, (err, res) => {
         if (err) {
             console.error(err);
@@ -43,7 +51,19 @@ const viewRoles = () => {
 }
 
 const viewEmployees = () => {
-    let query = 'SELECT * FROM employees'
+    let query = `
+    SELECT employees.id AS employees_id,
+           employees.first_name AS first_name,
+           employees.last_name AS last_name,
+           employees.manager_id AS manager_id,
+           roles.title AS job_title,
+           roles.salary AS salary,
+           departments.name AS department
+    FROM employees
+    JOIN roles ON employees.role_id = roles.id
+    JOIN departments ON roles.department_id = departments.id;
+`;
+
     db.query(query, (err, res) => {
         if (err) {
             console.error(err);
@@ -89,7 +109,6 @@ const roleQuestions = [
             } else {
                 return true;
             }
-
         }
     },
 ]
