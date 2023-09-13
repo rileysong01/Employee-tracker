@@ -105,13 +105,78 @@ const roleQuestions = [
         message: 'What is the salary of this new role',
         validate: (salary) => {
             if (Number.isInteger(salary)) {
-                return 'please use an integer'
+                return 'Please use an integer';
+            } else {
+                return true;
+            }
+        }
+    },
+    {
+        type: 'input',
+        name: 'department',
+        message: 'What is the department id for this role?',
+        validate: (departmentId) => {
+            if (Number.isInteger(departmentId)) {
+                return 'Please use an integer';
+            } else {
+                return true;
+            }
+        }
+    }
+];
+
+const addRoles = (title, salary, department_id) => {
+    let query = 'INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)'
+    const params = [title, salary, department_id];
+    db.query(query, params, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log(title + 'successfully added');
+    })
+}
+
+const employeeQuestions = [
+    {
+        type: 'input',
+        name: 'firstName',
+        message: 'What is the employees first name?'
+    },
+    {
+        type: 'input',
+        name: 'lastName',
+        message: 'What is the employees last name?'
+    },
+    {
+        type: 'input',
+        name: 'role',
+        message: 'What is the employees role id?',
+        validate: (role) => {
+            if (Number.isInteger(role)) {
+                return 'Please use an integer';
+            } else {
+                return true;
+            }
+        }
+    },
+    {
+        type: 'input',
+        name: 'manager',
+        message: 'What is the employees manager id?',
+        validate: (manager) => {
+            if (Number.isInteger(manager)) {
+                return 'Please use an integer';
             } else {
                 return true;
             }
         }
     },
 ]
+
+const addEmployee = (first_name, last_name, role_id, manager_id) {
+    
+}
 
 const init = () => {
     inquirer.prompt(initQuestions).then((response) => {
@@ -132,10 +197,14 @@ const init = () => {
                 });
                 break;
             case 'Add a role':
-
+                inquirer.prompt(roleQuestions).then((response) => {
+                    addRoles(response.newRole, response.newSalary, response.department)
+                });
                 break;
-            case 'Add an employy':
-
+            case 'Add an employee':
+                inquirer.prompt(employeeQuestions).then((response) => {
+                    addEmployee(response.firstName,response.lastName,response.role,response.manager);
+                });
                 break;
             case 'Update an employee role':
 
