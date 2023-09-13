@@ -186,6 +186,18 @@ const addEmployee = (first_name, last_name, role_id, manager_id) => {
     })
 }
 
+const updateEmployee = (role_id, id) => {
+    let query = 'UPDATE employees SET role_id = ? WHERE id = ?'
+    const params = [role_id, id]
+    db.query(query, params, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log(id + 's role has been successfully updated to' + role_id);
+    })
+}
+
 const init = () => {
     inquirer.prompt(initQuestions).then((response) => {
         console.log(response)
@@ -215,7 +227,36 @@ const init = () => {
                 });
                 break;
             case 'Update an employee role':
-
+                const employeeList = [];
+                db.query('SELECT id FROM employees', (err, results) => {
+                    if (err) {
+                      console.error('Error executing query:', err);
+                    } else {
+                      employeeList.push(...results.map(row => row.id));
+                      inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'employee',
+                            message: 'Select the employee ID you would like to udpate',
+                            choices: employeeList
+                        },
+                        {
+                            type: 'input',
+                            name: 'newRole',
+                            message: 'What is the employees new role ID?',
+                            validate: (newRole) => {
+                                if (Number.isInteger(newRole)) {
+                                    return 'Please use an integer';
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                      ]).then((response) => {
+                        updateEmployee(response.newRole, response.employee)
+                      })
+                    }
+                  })
                 break;
         }
     })
