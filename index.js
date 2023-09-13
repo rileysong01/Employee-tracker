@@ -133,7 +133,7 @@ const addRoles = (title, salary, department_id) => {
             console.error(err);
             return;
         }
-        console.log(title + 'successfully added');
+        console.log(title + ' successfully added');
     })
 }
 
@@ -174,8 +174,16 @@ const employeeQuestions = [
     },
 ]
 
-const addEmployee = (first_name, last_name, role_id, manager_id) {
-    
+const addEmployee = (first_name, last_name, role_id, manager_id) => {
+    let query = 'INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?,?)'
+    const params = [first_name, last_name, role_id, manager_id];
+    db.query(query, params, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log(first_name + ' ' + last_name + ' successfully added');
+    })
 }
 
 const init = () => {
