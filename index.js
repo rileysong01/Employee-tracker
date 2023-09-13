@@ -11,6 +11,7 @@ const db = mysql2.createConnection({
     console.log(`Connected to the database.`)
 )
 
+// inquirer questions + mysql queries
 const initQuestions = [
     {
         type: 'list',
@@ -28,6 +29,7 @@ const viewDepartments = () => {
             return;
         }
         console.table(res);
+        restart();
     })
 }
 
@@ -47,6 +49,7 @@ const viewRoles = () => {
             return;
         }
         console.table(res);
+        restart();
     })
 }
 
@@ -70,6 +73,7 @@ const viewEmployees = () => {
             return;
         }
         console.table(res);
+        restart();
     })
 }
 
@@ -90,6 +94,7 @@ const addDepartment = (name) => {
             return;
         }
         console.log(name + 'successfully added');
+        restart();
     })
 }
 
@@ -134,6 +139,7 @@ const addRoles = (title, salary, department_id) => {
             return;
         }
         console.log(title + ' successfully added');
+        restart();
     })
 }
 
@@ -183,6 +189,7 @@ const addEmployee = (first_name, last_name, role_id, manager_id) => {
             return;
         }
         console.log(first_name + ' ' + last_name + ' successfully added');
+        restart();
     })
 }
 
@@ -194,7 +201,8 @@ const updateEmployee = (role_id, id) => {
             console.error(err);
             return;
         }
-        console.log(id + 's role has been successfully updated to' + role_id);
+        console.log('Successfully updated!');
+        restart();
     })
 }
 
@@ -223,46 +231,68 @@ const init = () => {
                 break;
             case 'Add an employee':
                 inquirer.prompt(employeeQuestions).then((response) => {
-                    addEmployee(response.firstName,response.lastName,response.role,response.manager);
+                    addEmployee(response.firstName, response.lastName, response.role, response.manager);
                 });
                 break;
             case 'Update an employee role':
                 const employeeList = [];
-                db.query('SELECT id FROM employees', (err, results) => {
+                db.query('SELECT id, role_id, first_name FROM employees', (err, results) => {
                     if (err) {
-                      console.error('Error executing query:', err);
+                        console.error('Error executing query:', err);
                     } else {
-                      employeeList.push(...results.map(row => row.id));
-                      inquirer.prompt([
-                        {
-                            type: 'list',
-                            name: 'employee',
-                            message: 'Select the employee ID you would like to udpate',
-                            choices: employeeList
-                        },
-                        {
-                            type: 'input',
-                            name: 'newRole',
-                            message: 'What is the employees new role ID?',
-                            validate: (newRole) => {
-                                if (Number.isInteger(newRole)) {
-                                    return 'Please use an integer';
-                                } else {
-                                    return true;
+                        results.forEach((row) => {
+                            employeeList.push(`${row.first_name} current role id: ${row.role_id}, (employee id:${row.id})`);
+                        });
+                        inquirer.prompt([
+                            {
+                                type: 'list',
+                                name: 'employee',
+                                message: 'Select the employee ID you would like to udpate',
+                                choices: employeeList
+                            },
+                            {
+                                type: 'input',
+                                name: 'newRole',
+                                message: 'What is the employees new role ID?',
+                                validate: (newRole) => {
+                                    if (Number.isInteger(newRole)) {
+                                        return 'Please use an integer';
+                                    } else {
+                                        return true;
+                                    }
                                 }
                             }
-                        }
-                      ]).then((response) => {
-                        updateEmployee(response.newRole, response.employee)
-                      })
+                        ]).then((response) => {
+                            let employeeId = parseInt(response.employee.split("employee id:")[1].split(")"));
+                            updateEmployee(response.newRole, employeeId)
+                            
+                        })
                     }
-                  })
+                })
                 break;
         }
-    })
-        .catch(err => {
+    }).catch(err => {
             console.log('Error on promise ->', err);
+            restart();
         })
+}
+
+const restart = () => {
+    inquirer.prompt([
+        {
+            type: 'confirm',
+            name: 'restart',
+            message: 'Do you want to perform another action?'
+        }
+    ]).then((response) => {
+        if (response.restart) {
+            init();
+        } else {
+            console.log('Goodbye!');
+            db.end();
+            process.exit();
+        }
+    });
 }
 
 // initialize the app
