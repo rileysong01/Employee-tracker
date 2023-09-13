@@ -53,6 +53,47 @@ const viewEmployees = () => {
     })
 }
 
+const departmentQuestions = [
+    {
+        type: 'input',
+        name: 'newDepartment',
+        message: 'What is the new department called'
+    }
+]
+
+const addDepartment = (name) => {
+    let query = 'INSERT INTO departments (name) VALUES (?)'
+    const params = [name];
+    db.query(query, params, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log(name + 'successfully added');
+    })
+}
+
+const roleQuestions = [
+    {
+        type: 'input',
+        name: 'newRole',
+        message: 'What is the new role called'
+    },
+    {
+        type: 'input',
+        name: 'newSalary',
+        message: 'What is the salary of this new role',
+        validate: (salary) => {
+            if (Number.isInteger(salary)) {
+                return 'please use an integer'
+            } else {
+                return true;
+            }
+
+        }
+    },
+]
+
 const init = () => {
     inquirer.prompt(initQuestions).then((response) => {
         console.log(response)
@@ -67,7 +108,9 @@ const init = () => {
                 viewEmployees();
                 break;
             case 'Add a department':
-
+                inquirer.prompt(departmentQuestions).then((response) => {
+                    addDepartment(response.newDepartment);
+                });
                 break;
             case 'Add a role':
 
