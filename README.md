@@ -22,7 +22,9 @@
   Node.js
 
   ## Usage
-  To use this application, users must open an integraed terminal in Node.js. Users can then type 'node index.js' in the terminal to initialize the app. Type each input and hit enter to move to the next prompt. 
+  To use this application, users must open an integraed terminal in Node.js. Users can then type 'node index.js' in the terminal to initialize the app. Type each input and hit enter to move to the next prompt. Please see the attached demo video for a more detailed walkthrough on how to use this application:
+  https://drive.google.com/file/d/1oF-QBZ2YImUZwYdGW7T6FSJi_O2fu-vC/view
+  
   To open the terminal:
   ![screenshot of user opening terminal](assets/openterminal.png)
 
